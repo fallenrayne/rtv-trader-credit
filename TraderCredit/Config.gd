@@ -141,12 +141,6 @@ func _ready() -> void:
 # Applies config values to the public properties Main.gd reads.
 # MCM can call this at any time when the player saves settings in-game.
 func _apply(config: ConfigFile) -> void:
-	# Force a fresh disk read — MCM sometimes passes a stale in-memory
-	# config to the callback.
-	var fresh := ConfigFile.new()
-	if fresh.load(FILE_PATH + "/config.ini") == OK:
-		config = fresh
-
 	credit_per_task       = int(  config.get_value("Int",      "credit_per_task",       {"value": 500  })["value"])
 	death_penalty_enabled = bool( config.get_value("Bool",     "death_penalty_enabled",  {"value": true })["value"])
 	death_penalty_percent = float(config.get_value("Float",    "death_penalty_percent",  {"value": 10.0 })["value"])

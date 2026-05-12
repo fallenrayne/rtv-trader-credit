@@ -42,7 +42,6 @@ var _ui_injected: bool = false
 var _credit_buy_cost: float = 0.0  # credit owed on next accept click (0 = not a credit deal)
 
 # ---- Internal ----
-var _lib = null
 var _config = null
 var _was_dead: bool = false
 
@@ -82,15 +81,12 @@ func _input(event: InputEvent) -> void:
 		return
 	var pos := mbe.position
 	if is_instance_valid(_deal_tab_btn) and _deal_tab_btn.get_global_rect().has_point(pos):
-		print("[TraderCredit] _input: Barter tab clicked rect=%s" % _deal_tab_btn.get_global_rect())
 		_switch_tab(0)
 		get_viewport().set_input_as_handled()
 	elif is_instance_valid(_credit_tab_btn) and _credit_tab_btn.get_global_rect().has_point(pos):
-		print("[TraderCredit] _input: Credit tab clicked rect=%s" % _credit_tab_btn.get_global_rect())
 		_switch_tab(1)
 		get_viewport().set_input_as_handled()
 	elif is_instance_valid(_sell_credit_button) and _active_tab == 1 and not _sell_credit_button.disabled and _sell_credit_button.get_global_rect().has_point(pos):
-		print("[TraderCredit] _input: Sell for Credit clicked")
 		_on_sell_credit_pressed()
 		get_viewport().set_input_as_handled()
 	elif _credit_buy_cost > 0.0:
@@ -120,11 +116,11 @@ func _input(event: InputEvent) -> void:
 # ==============================================================
 
 func _on_lib_ready() -> void:
-	_lib = Engine.get_meta("RTVModLib")
-	_lib.hook("interface-open-post",          _on_interface_open)
-	_lib.hook("interface-close-pre",          _on_interface_close)
-	_lib.hook("interface-calculatedeal-post", _on_calculate_deal)
-	_lib.hook("trader-completetask-post",     _on_task_completed)
+	var lib = Engine.get_meta("RTVModLib")
+	lib.hook("interface-open-post",          _on_interface_open)
+	lib.hook("interface-close-pre",          _on_interface_close)
+	lib.hook("interface-calculatedeal-post", _on_calculate_deal)
+	lib.hook("trader-completetask-post",     _on_task_completed)
 	_apply_decay_all()
 	print("[TraderCredit] Hooks registered")
 
@@ -157,18 +153,17 @@ func _on_player_died() -> void:
 # ==============================================================
 
 func _on_task_completed(_task_data = null) -> void:
-	if _lib == null:
+	var lib = Engine.get_meta("RTVModLib") if Engine.has_meta("RTVModLib") else null
+	if lib == null:
 		return
-	var trader_node = _lib._caller
-	if trader_node == null or not is_instance_valid(trader_node):
+	var trader_node = lib._caller
+	if not is_instance_valid(trader_node):
 		return
 	if not "traderData" in trader_node or trader_node.traderData == null:
 		return
 
 	var trader_name: String = trader_node.traderData.name
-	# Read the authoritative count from the Trader node so we never drift.
-	var vanilla_count: int = trader_node.tasksCompleted.size()
-	_tasks_completed[trader_name] = max(_tasks_completed.get(trader_name, 0) + 1, vanilla_count)
+	_tasks_completed[trader_name] = trader_node.tasksCompleted.size()
 	_save()
 	print("[TraderCredit] Task complete for %s — cap now %d" % [trader_name, get_credit_cap(trader_name)])
 
@@ -257,8 +252,10 @@ func _find_deal_section(iface) -> Node:
 	if not iface or not is_instance_valid(iface.acceptButton):
 		return null
 	var node = iface.acceptButton
-	while node and node.get_parent() != iface:
+	while node and node != iface and node.get_parent() != iface:
 		node = node.get_parent()
+	if node == null or node == iface:
+		return null
 	return node
 
 
@@ -289,7 +286,6 @@ func _on_interface_close() -> void:
 
 func _on_calculate_deal() -> void:
 	if not is_instance_valid(_deal_section):
-		print("[TraderCredit] _on_calculate_deal: deal_section invalid, skipping")
 		return
 
 	_credit_buy_cost = 0.0
@@ -298,7 +294,6 @@ func _on_calculate_deal() -> void:
 	if not iface or not iface.trader:
 		return
 	if not is_instance_valid(iface.acceptButton):
-		print("[TraderCredit] _on_calculate_deal: acceptButton invalid")
 		return
 
 	var trader_name: String = iface.trader.traderData.name
@@ -332,17 +327,11 @@ func _on_calculate_deal() -> void:
 				offer_val += float(el.Value())
 
 	var deficit := request_val - offer_val
-	print("[TraderCredit] calc: supply_sel=%d req=%.0f offer=%.0f deficit=%.0f balance=%.0f accept_disabled=%s tax=%.2f" % [
-		supply_selected, request_val, offer_val, deficit, balance,
-		str(iface.acceptButton.disabled), tax
-	])
-
 	if deficit > 0.0 and balance >= deficit:
 		_credit_buy_cost = deficit
 		# Defer so TraderTabs' CalculateDeal (which calls super first, firing this hook)
 		# doesn't re-disable the button after we enable it.
 		call_deferred("_deferred_apply_credit_enable")
-		print("[TraderCredit] credit buy will enable: cost=%.0f" % deficit)
 
 	if _active_tab == 1:
 		_update_credit_tab(iface)
@@ -354,7 +343,6 @@ func _deferred_apply_credit_enable() -> void:
 	var iface = _get_interface()
 	if iface and is_instance_valid(iface.acceptButton):
 		iface.acceptButton.disabled = false
-		print("[TraderCredit] credit buy: accept enabled")
 
 
 func _ui_nodes_valid() -> bool:
@@ -413,7 +401,6 @@ func _inject_ui(iface) -> void:
 	wrapper.z_index  = 100
 	iface.add_child(wrapper)
 
-	print("[TraderCredit] inject: wrapper pos=%s size=%s" % [wrapper.position, wrapper.size])
 
 	# Tab row pinned to the top of the wrapper.
 	var tab_row := HBoxContainer.new()
@@ -473,21 +460,12 @@ func _inject_ui(iface) -> void:
 	_credit_panel = credit_panel
 
 	_ui_injected = true
-	_debug_wrapper_deferred(wrapper, tab_row)
-
-
-func _debug_wrapper_deferred(wrapper: Control, tab_row: HBoxContainer) -> void:
-	await get_tree().process_frame
-	print("[TraderCredit] post-layout: wrapper pos=%s size=%s tab_row.global_pos=%s tab_row.size=%s" % [
-		wrapper.position, wrapper.size, tab_row.global_position, tab_row.size
-	])
 
 
 func _hide_deal_label(node: Node) -> void:
 	for child in node.get_children():
 		if child is Label and child.text == "Deal":
 			child.visible = false
-			print("[TraderCredit] hid vanilla Deal label: %s" % child.get_path())
 			return
 		_hide_deal_label(child)
 
@@ -544,7 +522,6 @@ func _build_credit_panel() -> Control:
 	btn.name = "SellForCredit"
 	btn.text = "Sell for Credit"
 	btn.disabled = true
-	btn.pressed.connect(_on_sell_credit_pressed)
 	vbox.add_child(btn)
 	_sell_credit_button = btn
 
@@ -566,7 +543,6 @@ func _switch_tab(idx: int) -> void:
 		var iface = _get_interface()
 		if iface and iface.trader:
 			_update_credit_tab(iface)
-	print("[TraderCredit] tab switched to %d" % idx)
 
 
 func _update_credit_tab(iface) -> void:
@@ -583,7 +559,6 @@ func _update_credit_tab(iface) -> void:
 	if vanilla_count > _tasks_completed.get(trader_name, 0):
 		_tasks_completed[trader_name] = vanilla_count
 		_save()
-		print("[TraderCredit] seeded %s tasks from vanilla: %d" % [trader_name, vanilla_count])
 	var current      := get_credit(trader_name)
 	var cap          := get_credit_cap(trader_name)
 	var offer_value  := _selected_offer_value(iface, trader_name)
@@ -632,8 +607,8 @@ func _update_credit_tab(iface) -> void:
 # Offer value helpers
 # ==============================================================
 
-func _selected_offer_value(iface, trader_name: String) -> int:
-	var total := 0
+func _selected_offer_value(iface, trader_name: String) -> float:
+	var total := 0.0
 	if not iface.inventoryGrid:
 		return total
 	for element in iface.inventoryGrid.get_children():
@@ -660,7 +635,13 @@ func _item_accepted_by_trader(element, trader_name: String) -> bool:
 
 func _selected_request_count(iface) -> int:
 	var n := 0
-	if iface.supplyGrid:
+	var tt = iface.get_node_or_null("TT_TraderTabs")
+	if tt and tt.has_method("get_all_grids"):
+		for grid in tt.get_all_grids():
+			for element in grid.get_children():
+				if element.selected:
+					n += 1
+	elif iface.supplyGrid:
 		for element in iface.supplyGrid.get_children():
 			if element.selected:
 				n += 1
