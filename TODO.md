@@ -32,6 +32,12 @@
       (configurable, separate from the cap increase). Closes the loop: tasks raise the cap
       AND partially fill it, making the task → credit → spend cycle feel cohesive
 
+## i18n
+- [ ] All user-facing strings are hardcoded in English — extract them into a translation
+      file so the mod can be localized (Godot uses `.po`/`.translation` files; check
+      whether RTV's mod loader supports `TranslationServer` or if a simpler string-table
+      approach is needed)
+
 ## Robustness
 - [ ] `CreditLedger._config` is fetched in `_ready()` with no null guard — add a
       fallback so the mod doesn't silently break if `TraderCreditConfig` isn't in
