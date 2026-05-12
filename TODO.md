@@ -18,6 +18,20 @@
 - [ ] Add `credit_cap_max` setting — an optional hard ceiling on credit regardless
       of how many tasks the player has completed
 
+## Features
+- [ ] **Loyalty discount** — the longer your credit history with a trader (balance + tasks
+      completed), the slightly better their barter rates. Suggested tiers: 0 / 25 / 50 / 100
+      "credit-hours" unlocking 0 / 2 / 5 / 8% discounts on barter prices
+- [ ] **Item buyback** — when you sell something for credit, the trader holds it for a
+      configurable number of in-game days before it re-enters general stock. A "Buyback" tab
+      lets you repurchase it at cost (or cost + small fee) during that window
+- [ ] **Layaway / pre-order** — put credit toward an expensive trader item across multiple
+      visits; the item gets reserved and pulled from regular rotation until paid off or the
+      reservation expires. Gives players a savings goal and a reason to revisit the same trader
+- [ ] **Task completion credit bonus** — on task complete, award a one-time credit bonus
+      (configurable, separate from the cap increase). Closes the loop: tasks raise the cap
+      AND partially fill it, making the task → credit → spend cycle feel cohesive
+
 ## Robustness
 - [ ] `CreditLedger._config` is fetched in `_ready()` with no null guard — add a
       fallback so the mod doesn't silently break if `TraderCreditConfig` isn't in
