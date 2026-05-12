@@ -108,14 +108,17 @@ func inject(iface, section: Node) -> void:
 	section.set_anchor(SIDE_TOP,    0.0)
 	section.set_anchor(SIDE_BOTTOM, 0.0)
 	section.position = Vector2(0, content_y)
-	section.size     = Vector2(wrapper_w, content_h)
+	# Use the section's minimum content height so we don't stretch the game's UI.
+	var panel_h: float = section.get_combined_minimum_size().y
+	if panel_h <= 0.0:
+		panel_h = section.size.y
+	section.size = Vector2(wrapper_w, panel_h)
 	_deal_section = section
 
-	# Credit panel: same position/width but capped shorter so it doesn't overlap the Character panel.
 	var credit_panel := _build_credit_panel()
 	credit_panel.visible  = false
 	credit_panel.position = Vector2(0, content_y)
-	credit_panel.size     = Vector2(wrapper_w, min(content_h, 160.0))
+	credit_panel.size     = Vector2(wrapper_w, panel_h)
 	wrapper.add_child(credit_panel)
 	_credit_panel = credit_panel
 
