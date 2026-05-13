@@ -19,8 +19,12 @@ var death_penalty_enabled: bool  = true
 var death_penalty_percent: float = 10.0
 var decay_enabled:         bool  = true
 var decay_rate_per_day:    float = 5.0
-var item_restriction:      String = "trader_only"  # "trader_only" | "any"
-var sell_tax:              float = 30.0
+var item_restriction:           String = "trader_only"  # "trader_only" | "any"
+var sell_tax:                   float = 30.0
+var task_bonus_enabled:         bool  = true
+var task_bonus_easy:            int   = 100
+var task_bonus_intermediate:    int   = 250
+var task_bonus_hard:            int   = 500
 
 var _mcm_helpers = null
 
@@ -35,6 +39,7 @@ func _ready() -> void:
 	config.set_value("Category", "Credit Cap",       {"menu_pos": 1})
 	config.set_value("Category", "Penalties & Decay", {"menu_pos": 2})
 	config.set_value("Category", "Trading",           {"menu_pos": 3})
+	config.set_value("Category", "Task Bonus",        {"menu_pos": 4})
 
 	# ---- Credit Cap ----
 	config.set_value("Int", "credit_per_task", {
@@ -119,6 +124,50 @@ func _ready() -> void:
 		"menu_pos" = 2,
 	})
 
+	# ---- Task Bonus ----
+	config.set_value("Bool", "task_bonus_enabled", {
+		"name"     = "Task Bonus",
+		"tooltip"  = "When ON, completing a trader task awards a one-time credit bonus "
+				   + "in addition to raising your credit cap.",
+		"default"  = true,
+		"value"    = true,
+		"category" = "Task Bonus",
+		"menu_pos" = 1,
+	})
+
+	config.set_value("Int", "task_bonus_easy", {
+		"name"     = "Easy Task Bonus",
+		"tooltip"  = "Credit awarded on completion of an Easy task.",
+		"default"  = 100,
+		"value"    = 100,
+		"minRange" = 0,
+		"maxRange" = 1000,
+		"category" = "Task Bonus",
+		"menu_pos" = 2,
+	})
+
+	config.set_value("Int", "task_bonus_intermediate", {
+		"name"     = "Intermediate Task Bonus",
+		"tooltip"  = "Credit awarded on completion of an Intermediate task.",
+		"default"  = 250,
+		"value"    = 250,
+		"minRange" = 0,
+		"maxRange" = 2000,
+		"category" = "Task Bonus",
+		"menu_pos" = 3,
+	})
+
+	config.set_value("Int", "task_bonus_hard", {
+		"name"     = "Hard Task Bonus",
+		"tooltip"  = "Credit awarded on completion of a Hard task.",
+		"default"  = 500,
+		"value"    = 500,
+		"minRange" = 0,
+		"maxRange" = 5000,
+		"category" = "Task Bonus",
+		"menu_pos" = 4,
+	})
+
 	_merge_schema(config, FILE_PATH + "/config.ini")
 
 	if _mcm_helpers == null:
@@ -150,6 +199,11 @@ func _apply(config: ConfigFile) -> void:
 
 	var restriction_idx   = int(  config.get_value("Dropdown", "item_restriction",       {"value": 0    })["value"])
 	item_restriction = "trader_only" if restriction_idx == 0 else "any"
+
+	task_bonus_enabled      = bool(config.get_value("Bool", "task_bonus_enabled",      {"value": true })["value"])
+	task_bonus_easy         = int( config.get_value("Int",  "task_bonus_easy",         {"value": 100  })["value"])
+	task_bonus_intermediate = int( config.get_value("Int",  "task_bonus_intermediate", {"value": 250  })["value"])
+	task_bonus_hard         = int( config.get_value("Int",  "task_bonus_hard",         {"value": 500  })["value"])
 
 
 # Migrates an existing config file forward when new keys are added in an

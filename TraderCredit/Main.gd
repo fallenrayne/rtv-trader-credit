@@ -177,7 +177,41 @@ func _on_task_completed(_task_data = null) -> void:
 		return
 	var trader_name: String = trader_node.traderData.name
 	_ledger.set_task_count(trader_name, trader_node.tasksCompleted.size())
-	print("[TraderCredit] Task complete for %s — cap now %d" % [trader_name, _ledger.get_cap(trader_name)])
+	var new_cap: int = _ledger.get_cap(trader_name)
+	print("[TraderCredit] Task complete for %s — cap now %d" % [trader_name, new_cap])
+	Loader.Message(
+		"Credit cap with %s raised to %d" % [trader_name, new_cap],
+		Color(0.35, 0.85, 1.0)
+	)
+
+	if _config.task_bonus_enabled and _task_data != null:
+		_award_task_bonus(trader_name, _task_data)
+
+	var iface = GridHelper.get_interface(get_tree())
+	if iface and iface.trader and _ui.injected:
+		_refresh_credit_panel(iface)
+
+
+func _award_task_bonus(trader_name: String, task_data) -> void:
+	var difficulty: String = str(task_data.get("difficulty", ""))
+	var bonus: int = 0
+	match difficulty:
+		"Easy":         bonus = _config.task_bonus_easy
+		"Intermediate": bonus = _config.task_bonus_intermediate
+		"Hard":         bonus = _config.task_bonus_hard
+		_:
+			print("[TraderCredit] Unknown task difficulty '%s' — no bonus awarded" % difficulty)
+			return
+
+	if bonus <= 0:
+		return
+
+	var actual: float = _ledger.add_credit(trader_name, float(bonus))
+	var msg := "Task bonus: +%d credit with %s" % [int(actual), trader_name]
+	if actual < float(bonus):
+		msg += " (cap reached)"
+	Loader.Message(msg, Color(0.35, 0.85, 1.0))
+	print("[TraderCredit] Task bonus awarded: %.0f credit to %s (%s task)" % [actual, trader_name, difficulty])
 
 
 # ==============================================================
@@ -211,6 +245,7 @@ func _execute_credit_buy(iface) -> void:
 		iface.ResetTrading()
 		print("[TraderCredit] credit buy: spent %.0f at %s" % [cost, trader_name])
 		Loader.Message("Spent %d credit at %s" % [int(cost), trader_name], Color(0.35, 0.85, 1.0))
+		_refresh_credit_panel(iface)
 	else:
 		iface.acceptButton.disabled = true
 		Loader.Message("Not enough credit — balance changed.", Color.ORANGE)
