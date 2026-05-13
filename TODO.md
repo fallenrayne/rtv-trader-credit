@@ -1,7 +1,7 @@
 # Trader Credit — TODO
 
 ## Bugs
-- [ ] Credit panel is taller than the Barter panel — they should match height
+- [x] Credit panel is taller than the Barter panel — they should match height
 
 ## UX / Polish
 - [ ] Credit-buy mode is invisible — when the accept button is enabled by credit,
