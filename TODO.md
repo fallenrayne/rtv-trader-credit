@@ -28,7 +28,7 @@
 - [ ] **Layaway / pre-order** — put credit toward an expensive trader item across multiple
       visits; the item gets reserved and pulled from regular rotation until paid off or the
       reservation expires. Gives players a savings goal and a reason to revisit the same trader
-- [ ] **Task completion credit bonus** — on task complete, award a one-time credit bonus
+- [x] **Task completion credit bonus** — on task complete, award a one-time credit bonus
       (configurable, separate from the cap increase). Closes the loop: tasks raise the cap
       AND partially fill it, making the task → credit → spend cycle feel cohesive
 
