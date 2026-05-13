@@ -19,9 +19,6 @@
       of how many tasks the player has completed
 
 ## Features
-- [ ] **Loyalty discount** — the longer your credit history with a trader (balance + tasks
-      completed), the slightly better their barter rates. Suggested tiers: 0 / 25 / 50 / 100
-      "credit-hours" unlocking 0 / 2 / 5 / 8% discounts on barter prices
 - [ ] **Item buyback** — when you sell something for credit, the trader holds it for a
       configurable number of in-game days before it re-enters general stock. A "Buyback" tab
       lets you repurchase it at cost (or cost + small fee) during that window
