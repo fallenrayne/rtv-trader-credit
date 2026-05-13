@@ -22,9 +22,6 @@
 - [ ] **Item buyback** — when you sell something for credit, the trader holds it for a
       configurable number of in-game days before it re-enters general stock. A "Buyback" tab
       lets you repurchase it at cost (or cost + small fee) during that window
-- [ ] **Layaway / pre-order** — put credit toward an expensive trader item across multiple
-      visits; the item gets reserved and pulled from regular rotation until paid off or the
-      reservation expires. Gives players a savings goal and a reason to revisit the same trader
 - [x] **Task completion credit bonus** — on task complete, award a one-time credit bonus
       (configurable, separate from the cap increase). Closes the loop: tasks raise the cap
       AND partially fill it, making the task → credit → spend cycle feel cohesive
