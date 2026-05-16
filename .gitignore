@@ -1,1 +1,3 @@
 .claude/
+*.vmz
+build.ps1
