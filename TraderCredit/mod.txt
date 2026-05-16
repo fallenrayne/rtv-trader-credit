@@ -5,7 +5,8 @@ version="1.0.0"
 priority=0
 
 [autoload]
-TraderCreditConfig="res://TraderCredit/Config.gd"
-TraderCreditMain="res://TraderCredit/Main.gd"
+TraderCreditConfig="res://mods/TraderCredit/Config.gd"
+TraderCreditMain="res://mods/TraderCredit/Main.gd"
 
 [registry]
+enabled=true

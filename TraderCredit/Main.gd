@@ -10,9 +10,9 @@ extends Node
 # utilities live in GridHelper.
 # ============================================================
 
-const GridHelper  = preload("res://TraderCredit/GridHelper.gd")
-const LedgerScene = preload("res://TraderCredit/CreditLedger.gd")
-const UIScene     = preload("res://TraderCredit/CreditUI.gd")
+const GridHelper  = preload("res://mods/TraderCredit/GridHelper.gd")
+const LedgerScene = preload("res://mods/TraderCredit/CreditLedger.gd")
+const UIScene     = preload("res://mods/TraderCredit/CreditUI.gd")
 
 var _game_data = preload("res://Resources/GameData.tres")
 
