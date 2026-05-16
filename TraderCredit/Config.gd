@@ -15,10 +15,12 @@ const FILE_PATH := "user://MCM/TraderCredit"
 
 # ---- Public settings (read directly by Main.gd) ----
 var credit_per_task:       int   = 500
+var credit_cap_max:        int   = 0     # 0 = no hard ceiling
 var death_penalty_enabled: bool  = true
 var death_penalty_percent: float = 10.0
 var decay_enabled:         bool  = true
 var decay_rate_per_day:    float = 5.0
+var decay_floor_percent:   float = 0.0  # 0 = no floor
 var item_restriction:           String = "trader_only"  # "trader_only" | "any"
 var sell_tax:                   float = 30.0
 var task_bonus_enabled:         bool  = true
@@ -52,6 +54,18 @@ func _ready() -> void:
 		"maxRange" = 5000,
 		"category" = "Credit Cap",
 		"menu_pos" = 1,
+	})
+
+	config.set_value("Int", "credit_cap_max", {
+		"name"     = "Max Credit Cap",
+		"tooltip"  = "Hard ceiling on credit per trader, regardless of tasks completed. "
+				   + "Set to 0 to disable (no ceiling — cap grows with tasks indefinitely).",
+		"default"  = 0,
+		"value"    = 0,
+		"minRange" = 0,
+		"maxRange" = 50000,
+		"category" = "Credit Cap",
+		"menu_pos" = 2,
 	})
 
 	# ---- Penalties & Decay ----
@@ -97,6 +111,18 @@ func _ready() -> void:
 		"maxRange" = 25.0,
 		"category" = "Penalties & Decay",
 		"menu_pos" = 4,
+	})
+
+	config.set_value("Float", "decay_floor_percent", {
+		"name"     = "Decay Floor (%)",
+		"tooltip"  = "Decay will never reduce a balance below this percentage of the credit cap. "
+				   + "20 = balance never falls below 20 % of cap. Set to 0 to disable.",
+		"default"  = 0.0,
+		"value"    = 0.0,
+		"minRange" = 0.0,
+		"maxRange" = 50.0,
+		"category" = "Penalties & Decay",
+		"menu_pos" = 5,
 	})
 
 	# ---- Trading ----
@@ -191,10 +217,12 @@ func _ready() -> void:
 # MCM can call this at any time when the player saves settings in-game.
 func _apply(config: ConfigFile) -> void:
 	credit_per_task       = int(  config.get_value("Int",      "credit_per_task",       {"value": 500  })["value"])
+	credit_cap_max        = int(  config.get_value("Int",      "credit_cap_max",         {"value": 0    })["value"])
 	death_penalty_enabled = bool( config.get_value("Bool",     "death_penalty_enabled",  {"value": true })["value"])
 	death_penalty_percent = float(config.get_value("Float",    "death_penalty_percent",  {"value": 10.0 })["value"])
 	decay_enabled         = bool( config.get_value("Bool",     "decay_enabled",          {"value": true })["value"])
 	decay_rate_per_day    = float(config.get_value("Float",    "decay_rate_per_day",     {"value": 5.0  })["value"])
+	decay_floor_percent   = float(config.get_value("Float",    "decay_floor_percent",    {"value": 0.0  })["value"])
 	sell_tax              = float(config.get_value("Float",    "sell_tax",               {"value": 30.0 })["value"])
 
 	var restriction_idx   = int(  config.get_value("Dropdown", "item_restriction",       {"value": 0    })["value"])

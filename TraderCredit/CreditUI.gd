@@ -15,6 +15,7 @@ var barter_tab_btn: Button = null
 var credit_tab_btn: Button = null
 var sell_button: Button = null
 
+var _wrapper: Control = null
 var _deal_section: Node = null
 var _credit_panel: Control = null
 var _balance_label: Label = null
@@ -39,11 +40,22 @@ func reset() -> void:
 	barter_tab_btn   = null
 	credit_tab_btn   = null
 	sell_button      = null
+	_wrapper         = null
 	_deal_section    = null
 	_credit_panel    = null
 	_balance_label   = null
 	_earn_label      = null
 	_warn_label      = null
+
+
+func show_wrapper() -> void:
+	if is_instance_valid(_wrapper):
+		_wrapper.visible = true
+
+
+func hide_wrapper() -> void:
+	if is_instance_valid(_wrapper):
+		_wrapper.visible = false
 
 
 func inject(iface, section: Node) -> void:
@@ -67,6 +79,7 @@ func inject(iface, section: Node) -> void:
 	wrapper.size     = Vector2(wrapper_w, wrapper_h)
 	wrapper.z_index  = 100
 	iface.add_child(wrapper)
+	_wrapper = wrapper
 
 	# Tab row pinned to the top of the wrapper.
 	var tab_row := HBoxContainer.new()

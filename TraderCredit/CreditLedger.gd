@@ -24,7 +24,10 @@ func get_balance(trader_name: String) -> float:
 
 
 func get_cap(trader_name: String) -> int:
-	return _task_counts.get(trader_name, 0) * _config.credit_per_task
+	var cap: int = _task_counts.get(trader_name, 0) * _config.credit_per_task
+	if _config.credit_cap_max > 0:
+		cap = min(cap, _config.credit_cap_max)
+	return cap
 
 
 func get_remaining_cap(trader_name: String) -> float:
@@ -90,13 +93,23 @@ func apply_decay_all(current_day: int) -> void:
 func apply_decay_for_trader(trader_name: String, current_day: int) -> void:
 	if not _config.decay_enabled or current_day <= 0:
 		return
-	var last_day: int = _last_decay_day.get(trader_name, current_day)
+	if not _last_decay_day.has(trader_name):
+		_last_decay_day[trader_name] = current_day
+		save_state()
+		return
+	var last_day: int = _last_decay_day[trader_name]
 	var days_elapsed  := current_day - last_day
 	if days_elapsed <= 0:
 		return
-	var rate: float   = float(_config.decay_rate_per_day) / 100.0
-	var factor: float = pow(1.0 - rate, days_elapsed)
-	_balances[trader_name] = floor(_balances.get(trader_name, 0.0) * factor)
+	var rate: float      = float(_config.decay_rate_per_day) / 100.0
+	var factor: float    = pow(1.0 - rate, days_elapsed)
+	var new_balance: float = floor(_balances.get(trader_name, 0.0) * factor)
+
+	if _config.decay_floor_percent > 0.0:
+		var floor_amount: float = float(get_cap(trader_name)) * (_config.decay_floor_percent / 100.0)
+		new_balance = max(new_balance, floor_amount)
+
+	_balances[trader_name] = new_balance
 	_last_decay_day[trader_name] = current_day
 	save_state()
 

@@ -119,6 +119,8 @@ func _on_interface_open() -> void:
 			return
 		_ui.inject(iface, deal_section)
 
+	_ui.show_wrapper()
+
 	if _config.decay_enabled:
 		_ledger.apply_decay_for_trader(iface.trader.traderData.name, _get_current_day())
 
@@ -128,6 +130,7 @@ func _on_interface_open() -> void:
 func _on_interface_close() -> void:
 	_ui.pending_buy_cost = 0.0
 	_ui.switch_tab(0)
+	_ui.hide_wrapper()
 
 
 func _on_calculate_deal() -> void:

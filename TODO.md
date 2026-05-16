@@ -13,9 +13,9 @@
       use a proper pressed/highlighted style so the active tab is obvious
 
 ## Config
-- [ ] Add `decay_floor` setting — a minimum balance below which decay stops
+- [x] Add `decay_floor` setting — a minimum balance below which decay stops
       (e.g. never decay below 20% of cap); prevents decay from silently zeroing out
-- [ ] Add `credit_cap_max` setting — an optional hard ceiling on credit regardless
+- [x] Add `credit_cap_max` setting — an optional hard ceiling on credit regardless
       of how many tasks the player has completed
 
 ## Features
