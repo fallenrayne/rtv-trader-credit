@@ -39,6 +39,8 @@
 - [x] `CreditLedger._config` is fetched in `_ready()` with no null guard — add a
       fallback so the mod doesn't silently break if `TraderCreditConfig` isn't in
       the tree yet
-- [ ] `load_state()` is only called on respawn — if the player can load a different
-      save slot mid-session, credit state won't refresh; hook into save-slot changes
-      if the game exposes that event
+- [x] Credit save data shared across save slots — changed save path from `.cfg` to
+      `.tres` so MultiSaveSlots automatically mirrors it per slot
+- [x] `load_state()` is only called on respawn — if the player can load a different
+      save slot mid-session, credit state won't refresh; fixed by calling `load_state()`
+      on every interface open

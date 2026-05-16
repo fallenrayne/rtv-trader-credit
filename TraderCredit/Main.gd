@@ -105,6 +105,7 @@ func _on_lib_ready() -> void:
 # ==============================================================
 
 func _on_interface_open() -> void:
+	_ledger.load_state()
 	var iface = GridHelper.get_interface(get_tree())
 	if not iface or not iface.trader:
 		return

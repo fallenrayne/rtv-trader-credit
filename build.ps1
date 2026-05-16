@@ -1,6 +1,5 @@
-$version = (Get-Content "TraderCredit\mod.txt" | Select-String 'version="(.+)"').Matches[0].Groups[1].Value
 $outDir  = "releases"
-$outName = "TraderCredit-$version.vmz"
+$outName = "TraderCredit.vmz"
 $outPath = "$outDir\$outName"
 
 if (-not (Test-Path $outDir)) { New-Item -ItemType Directory -Path $outDir | Out-Null }

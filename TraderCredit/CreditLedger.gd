@@ -4,7 +4,8 @@ extends Node
 # Persisted to SAVE_PATH as a ConfigFile.
 # Instantiated as a child node of TraderCreditMain.
 
-const SAVE_PATH := "user://trader_credit.cfg"
+const SAVE_PATH     := "user://trader_credit.tres"
+const SAVE_PATH_OLD := "user://trader_credit.cfg"
 
 var _balances: Dictionary = {}      # trader_name -> float
 var _task_counts: Dictionary = {}   # trader_name -> int
@@ -130,12 +131,15 @@ func save_state() -> void:
 
 
 func load_state() -> void:
-	var cfg := ConfigFile.new()
-	if cfg.load(SAVE_PATH) != OK:
-		return
 	_balances.clear()
 	_task_counts.clear()
 	_last_decay_day.clear()
+	var cfg := ConfigFile.new()
+	var migrating := false
+	if cfg.load(SAVE_PATH) != OK:
+		if cfg.load(SAVE_PATH_OLD) != OK:
+			return
+		migrating = true
 	if cfg.has_section("credit"):
 		for key in cfg.get_section_keys("credit"):
 			_balances[key]      = float(cfg.get_value("credit",    key, 0.0))
@@ -145,3 +149,9 @@ func load_state() -> void:
 	if cfg.has_section("decay_day"):
 		for key in cfg.get_section_keys("decay_day"):
 			_last_decay_day[key] = int( cfg.get_value("decay_day", key, 0))
+	if migrating:
+		save_state()
+		var dir := DirAccess.open("user://")
+		if dir:
+			dir.remove("trader_credit.cfg")
+		print("[TraderCredit] Migrated save data from .cfg to .tres")
