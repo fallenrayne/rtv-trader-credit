@@ -21,6 +21,7 @@ var _credit_panel: Control = null
 var _balance_label: Label = null
 var _earn_label: Label = null
 var _warn_label: Label = null
+var _buy_cost_label: Label = null
 
 
 func is_valid() -> bool:
@@ -46,6 +47,7 @@ func reset() -> void:
 	_balance_label   = null
 	_earn_label      = null
 	_warn_label      = null
+	_buy_cost_label  = null
 
 
 func show_wrapper() -> void:
@@ -135,6 +137,18 @@ func inject(iface, section: Node) -> void:
 	wrapper.add_child(credit_panel)
 	_credit_panel = credit_panel
 
+	var buy_cost_label := Label.new()
+	buy_cost_label.name = "CreditBuyCost"
+	buy_cost_label.add_theme_font_size_override("font_size", 13)
+	buy_cost_label.add_theme_color_override("font_color", Color(0.35, 0.85, 1.0))
+	buy_cost_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	buy_cost_label.position = Vector2(0, content_y + panel_h + 5.0)
+	buy_cost_label.size     = Vector2(wrapper_w, 20)
+	buy_cost_label.visible  = false
+	wrapper.add_child(buy_cost_label)
+	_buy_cost_label = buy_cost_label
+
+	call_deferred("_reposition_buy_cost_label")
 	switch_tab(0)
 	injected = true
 
@@ -145,10 +159,42 @@ func switch_tab(idx: int) -> void:
 		_deal_section.visible = (idx == 0)
 	if is_instance_valid(_credit_panel):
 		_credit_panel.visible = (idx == 1)
-	if is_instance_valid(barter_tab_btn):
-		barter_tab_btn.modulate = Color(1, 1, 1, 1.0) if idx == 0 else Color(1, 1, 1, 0.5)
-	if is_instance_valid(credit_tab_btn):
-		credit_tab_btn.modulate = Color(1, 1, 1, 1.0) if idx == 1 else Color(1, 1, 1, 0.5)
+	if is_instance_valid(_buy_cost_label) and idx != 0:
+		_buy_cost_label.visible = false
+	_style_tab(barter_tab_btn, idx == 0)
+	_style_tab(credit_tab_btn, idx == 1)
+
+
+func update_pending_cost(cost: float) -> void:
+	if not is_instance_valid(_buy_cost_label):
+		return
+	if cost > 0.0 and active_tab == 0:
+		_buy_cost_label.text    = "Will spend %d credit" % int(cost)
+		_buy_cost_label.visible = true
+	else:
+		_buy_cost_label.visible = false
+
+
+func _style_tab(btn: Button, active: bool) -> void:
+	if not is_instance_valid(btn):
+		return
+	var style := StyleBoxFlat.new()
+	style.corner_radius_top_left  = 3
+	style.corner_radius_top_right = 3
+	style.content_margin_left   = 4.0
+	style.content_margin_right  = 4.0
+	style.content_margin_top    = 4.0
+	style.content_margin_bottom = 4.0
+	if active:
+		style.bg_color  = Color(0.25, 0.6, 0.85, 0.45)
+		btn.modulate    = Color(1, 1, 1, 1.0)
+	else:
+		style.bg_color  = Color(0.1, 0.1, 0.1, 0.45)
+		btn.modulate    = Color(1, 1, 1, 0.55)
+	btn.add_theme_stylebox_override("normal",   style)
+	btn.add_theme_stylebox_override("hover",    style)
+	btn.add_theme_stylebox_override("pressed",  style)
+	btn.add_theme_stylebox_override("focus",    style)
 
 
 func update_panel(
@@ -197,6 +243,13 @@ func update_panel(
 
 
 # ---- Private helpers ----
+
+func _reposition_buy_cost_label() -> void:
+	if not is_instance_valid(_deal_section) or not is_instance_valid(_buy_cost_label):
+		return
+	var section_bottom: float = _deal_section.position.y + _deal_section.size.y
+	_buy_cost_label.position = Vector2(0, section_bottom + 5.0)
+
 
 func _hide_deal_label(node: Node) -> void:
 	for child in node.get_children():

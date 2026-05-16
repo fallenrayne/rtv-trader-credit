@@ -129,6 +129,7 @@ func _on_interface_open() -> void:
 
 func _on_interface_close() -> void:
 	_ui.pending_buy_cost = 0.0
+	_ui.update_pending_cost(0.0)
 	_ui.switch_tab(0)
 	_ui.hide_wrapper()
 
@@ -138,6 +139,7 @@ func _on_calculate_deal() -> void:
 		return
 
 	_ui.pending_buy_cost = 0.0
+	_ui.update_pending_cost(0.0)
 
 	var iface = GridHelper.get_interface(get_tree())
 	if not iface or not iface.trader or not is_instance_valid(iface.acceptButton):
@@ -153,6 +155,7 @@ func _on_calculate_deal() -> void:
 
 	if deficit > 0.0 and balance >= deficit:
 		_ui.pending_buy_cost = deficit
+		_ui.update_pending_cost(deficit)
 		# Defer so TraderTabs' CalculateDeal (which fires this hook inside super()) doesn't
 		# re-disable the accept button after we enable it.
 		call_deferred("_deferred_enable_accept")
@@ -239,6 +242,7 @@ func _execute_credit_buy(iface) -> void:
 	var trader_name: String = iface.trader.traderData.name
 	var cost: float = _ui.pending_buy_cost
 	_ui.pending_buy_cost = 0.0
+	_ui.update_pending_cost(0.0)
 
 	if _ledger.get_balance(trader_name) >= cost:
 		_ledger.spend_credit(trader_name, cost)

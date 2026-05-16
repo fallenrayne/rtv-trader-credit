@@ -24,6 +24,8 @@ func get_balance(trader_name: String) -> float:
 
 
 func get_cap(trader_name: String) -> int:
+	if _config == null:
+		return 0
 	var cap: int = _task_counts.get(trader_name, 0) * _config.credit_per_task
 	if _config.credit_cap_max > 0:
 		cap = min(cap, _config.credit_cap_max)
@@ -91,7 +93,7 @@ func apply_decay_all(current_day: int) -> void:
 
 
 func apply_decay_for_trader(trader_name: String, current_day: int) -> void:
-	if not _config.decay_enabled or current_day <= 0:
+	if _config == null or not _config.decay_enabled or current_day <= 0:
 		return
 	if not _last_decay_day.has(trader_name):
 		_last_decay_day[trader_name] = current_day
