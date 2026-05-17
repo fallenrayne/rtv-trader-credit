@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+
+- **Fix:** Sell button now reliably enables when items are selected, even without trader supply items selected.
+- **Fix:** Null guards on supply grid prevent crashes when used alongside mods that replace or clear the supply grid (e.g. TraderImprovements).
+
 ## 1.0.1
 
 - **Fix:** Credit data is now isolated per save slot when the [MultiSaveSlots](https://modworkshop.net/mod/56735) mod is installed. Previously all slots shared the same credit file.
