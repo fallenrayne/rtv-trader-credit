@@ -19,7 +19,7 @@ Each trader maintains a separate credit balance. Credit is earned by selling ite
 ## Requirements
 
 - **Road to Vostok** (Godot 4.x build)
-- **RTVModLib** — provides the hook system this mod depends on
+- **Metro Mod Loader** — provides the hook system this mod depends on
 - **Mod Configuration Menu (MCM)** — optional but recommended; without it, all defaults apply
 
 ## Installation
