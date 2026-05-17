@@ -29,10 +29,12 @@ static func get_supply_cost(iface, tax: float) -> float:
 	var tt = iface.get_node_or_null("TT_TraderTabs")
 	if tt and tt.has_method("get_all_grids"):
 		for grid in tt.get_all_grids():
+			if not is_instance_valid(grid):
+				continue
 			for el in grid.get_children():
 				if el.selected and el.has_method("Value"):
 					total += float(el.Value()) * tax
-	elif iface.supplyGrid:
+	elif is_instance_valid(iface.supplyGrid):
 		for el in iface.supplyGrid.get_children():
 			if el.selected and el.has_method("Value"):
 				total += float(el.Value()) * tax
@@ -45,10 +47,12 @@ static func get_supply_selected_count(iface) -> int:
 	var tt = iface.get_node_or_null("TT_TraderTabs")
 	if tt and tt.has_method("get_all_grids"):
 		for grid in tt.get_all_grids():
+			if not is_instance_valid(grid):
+				continue
 			for el in grid.get_children():
 				if el.selected:
 					n += 1
-	elif iface.supplyGrid:
+	elif is_instance_valid(iface.supplyGrid):
 		for el in iface.supplyGrid.get_children():
 			if el.selected:
 				n += 1

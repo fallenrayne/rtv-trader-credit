@@ -2,6 +2,10 @@
 
 ## Bugs
 - [x] Credit panel is taller than the Barter panel — they should match height
+- [x] **Sell button may never enable** — `_refresh_credit_panel` is only called from the
+      `interface-calculatedeal-post` hook, which may not fire when the player selects offer
+      items without touching supply items; fixed by polling at 10 Hz in `_process` while
+      the Credit tab is active
 
 ## UX / Polish
 - [x] Credit-buy mode is invisible — when the accept button is enabled by credit,

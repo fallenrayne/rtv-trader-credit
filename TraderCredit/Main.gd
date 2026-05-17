@@ -20,6 +20,7 @@ var _ledger: Node = null   # CreditLedger instance
 var _ui: Node     = null   # CreditUI instance
 var _config       = null
 var _was_dead: bool = false
+var _credit_poll_timer: float = 0.0
 
 
 func _ready() -> void:
@@ -46,13 +47,21 @@ func _ready() -> void:
 	print("[TraderCredit] Loaded")
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if _game_data.isDead and not _was_dead:
 		_was_dead = true
 		_on_player_died()
 	elif not _game_data.isDead and _was_dead:
 		_was_dead = false
 		_ledger.load_state()
+
+	if _ui.injected and _ui.active_tab == 1:
+		_credit_poll_timer -= delta
+		if _credit_poll_timer <= 0.0:
+			_credit_poll_timer = 0.1
+			var iface = GridHelper.get_interface(get_tree())
+			if iface and iface.trader:
+				_refresh_credit_panel(iface)
 
 
 # Intercepts left-clicks before Interface.gd can swallow them.
