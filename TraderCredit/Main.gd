@@ -13,8 +13,6 @@ extends Node
 const GridHelper  = preload("res://mods/TraderCredit/GridHelper.gd")
 const LedgerScene = preload("res://mods/TraderCredit/CreditLedger.gd")
 const UIScene     = preload("res://mods/TraderCredit/CreditUI.gd")
-const TraderLayout = preload("res://mods/TraderCredit/TraderLayout.gd")
-
 var _game_data = preload("res://Resources/GameData.tres")
 
 var _ledger: Node = null   # CreditLedger instance
@@ -136,8 +134,8 @@ func _on_interface_close() -> void:
 	_ui.pending_buy_cost = 0.0
 	_ui.update_pending_cost(0.0)
 	_ui.hide_wrapper()
-	if Engine.has_meta("TraderCreditLayout"):
-		Engine.remove_meta("TraderCreditLayout")
+	if Engine.has_meta("RayneDevLibs_TraderLayout"):
+		Engine.remove_meta("RayneDevLibs_TraderLayout")
 
 
 func _on_calculate_deal() -> void:

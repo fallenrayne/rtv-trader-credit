@@ -7,7 +7,7 @@ extends Node
 # credit-relevant state changes, and update_pending_cost() when a
 # credit-buy deficit is calculated.
 
-const TraderLayout = preload("res://mods/TraderCredit/TraderLayout.gd")
+const TraderLayout = preload("res://mods/RayneDevLibs/Trader/TraderLayout.gd")
 
 var injected: bool = false
 var pending_buy_cost: float = 0.0
@@ -37,6 +37,8 @@ func _process(_delta: float) -> void:
 
 
 func reset() -> void:
+	if Engine.has_meta("RayneDevLibs_TraderZones"):
+		Engine.get_meta("RayneDevLibs_TraderZones").unregister_zones("trader_credit")
 	injected          = false
 	pending_buy_cost  = 0.0
 	_needs_reposition = false
@@ -64,7 +66,7 @@ func inject(iface, section: Node) -> void:
 
 	_layout = TraderLayout.new()
 	_layout.measure(iface)
-	Engine.set_meta("TraderCreditLayout", _layout)
+	Engine.set_meta("RayneDevLibs_TraderLayout", _layout)
 
 	var wrapper_x: float = _layout.panel_x
 	var wrapper_y: float = _layout.portrait_bot_y + 20.0
@@ -130,6 +132,10 @@ func inject(iface, section: Node) -> void:
 
 	_needs_reposition = true
 	injected = true
+
+	if Engine.has_meta("RayneDevLibs_TraderZones"):
+		var reg = Engine.get_meta("RayneDevLibs_TraderZones")
+		reg.register_zone("trader_credit", Rect2(wrapper.position, wrapper.size), "TraderCredit")
 
 
 func update_pending_cost(cost: float) -> void:
