@@ -13,6 +13,7 @@ extends Node
 const GridHelper  = preload("res://mods/TraderCredit/GridHelper.gd")
 const LedgerScene = preload("res://mods/TraderCredit/CreditLedger.gd")
 const UIScene     = preload("res://mods/TraderCredit/CreditUI.gd")
+const TraderLayout = preload("res://mods/TraderCredit/TraderLayout.gd")
 
 var _game_data = preload("res://Resources/GameData.tres")
 
@@ -55,7 +56,7 @@ func _process(delta: float) -> void:
 		_was_dead = false
 		_ledger.load_state()
 
-	if _ui.injected and _ui.active_tab == 1:
+	if _ui.injected:
 		_credit_poll_timer -= delta
 		if _credit_poll_timer <= 0.0:
 			_credit_poll_timer = 0.1
@@ -75,13 +76,7 @@ func _input(event: InputEvent) -> void:
 		return
 	var pos := mbe.position
 
-	if is_instance_valid(_ui.barter_tab_btn) and _ui.barter_tab_btn.get_global_rect().has_point(pos):
-		_ui.switch_tab(0)
-		get_viewport().set_input_as_handled()
-	elif is_instance_valid(_ui.credit_tab_btn) and _ui.credit_tab_btn.get_global_rect().has_point(pos):
-		_ui.switch_tab(1)
-		get_viewport().set_input_as_handled()
-	elif is_instance_valid(_ui.sell_button) and _ui.active_tab == 1 \
+	if is_instance_valid(_ui.sell_button) \
 			and not _ui.sell_button.disabled \
 			and _ui.sell_button.get_global_rect().has_point(pos):
 		_execute_sell()
@@ -140,8 +135,9 @@ func _on_interface_open() -> void:
 func _on_interface_close() -> void:
 	_ui.pending_buy_cost = 0.0
 	_ui.update_pending_cost(0.0)
-	_ui.switch_tab(0)
 	_ui.hide_wrapper()
+	if Engine.has_meta("TraderCreditLayout"):
+		Engine.remove_meta("TraderCreditLayout")
 
 
 func _on_calculate_deal() -> void:
@@ -170,8 +166,7 @@ func _on_calculate_deal() -> void:
 		# re-disable the accept button after we enable it.
 		call_deferred("_deferred_enable_accept")
 
-	if _ui.active_tab == 1:
-		_refresh_credit_panel(iface)
+	_refresh_credit_panel(iface)
 
 
 func _deferred_enable_accept() -> void:

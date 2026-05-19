@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0
+
+- **Change:** Removed the Barter/Credit tab toggle. The credit sell button now appears directly below the deal section in the standard barter view — no tab switching required.
+- **Fix:** Deal section height is now measured correctly using the accept button's rendered position, so the sell button always lands below the deal items rather than overlapping them.
+- **Polish:** Credit balance and sell-preview info (earn amount, cap warning, buy-cost notice) share a single compact row at the top of the credit area.
+
 ## 1.0.2
 
 - **Fix:** Sell button now reliably enables when items are selected, even without trader supply items selected.

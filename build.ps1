@@ -24,3 +24,10 @@ Get-ChildItem "TraderCredit" -File | Where-Object { $_.Name -ne "mod.txt" } | Fo
 
 $archive.Dispose()
 Write-Host "Built $outPath"
+
+# Deploy to mods folder (path set in build.local.ps1)
+if (Test-Path "build.local.ps1") { . ".\build.local.ps1" }
+if ($modsDir -and (Test-Path $modsDir)) {
+    Copy-Item $absOut -Destination "$modsDir\$outName" -Force
+    Write-Host "Deployed to $modsDir\$outName"
+}
