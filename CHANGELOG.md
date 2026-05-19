@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.1
+
+- **Fix:** "Deselect items to sell." message no longer appears when the player has trader supply items selected alongside inventory items — the sell button being disabled already communicates this.
+- **Fix:** Info label now shows "Need X more credit" when the player selects trader items but has insufficient credit to cover the deficit.
+- **Fix:** "Will spend X credit" and "Need X more credit" messages now clear correctly when the player clicks Reset, instead of remaining stale.
+
 ## 1.1.0
 
 - **Change:** Removed the Barter/Credit tab toggle. The credit sell button now appears directly below the deal section in the standard barter view — no tab switching required.

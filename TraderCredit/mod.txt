@@ -1,7 +1,7 @@
 [mod]
 name="Trader Credit"
 id="trader_credit"
-version="1.1.0"
+version="1.1.1"
 priority=0
 
 [autoload]

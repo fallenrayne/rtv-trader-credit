@@ -11,6 +11,7 @@ const TraderLayout = preload("res://mods/TraderCredit/TraderLayout.gd")
 
 var injected: bool = false
 var pending_buy_cost: float = 0.0
+var pending_credit_shortfall: float = 0.0
 var _needs_reposition: bool = false
 var _layout = null
 
@@ -37,9 +38,10 @@ func _process(_delta: float) -> void:
 
 
 func reset() -> void:
-	injected          = false
-	pending_buy_cost  = 0.0
-	_needs_reposition = false
+	injected                  = false
+	pending_buy_cost          = 0.0
+	pending_credit_shortfall  = 0.0
+	_needs_reposition         = false
 	_layout           = null
 	sell_button       = null
 	_wrapper          = null
@@ -153,6 +155,9 @@ func update_panel(
 	var credit_value: float = floor(offer_value * (1.0 - sell_tax / 100.0))
 	var can_sell := offer_value > 0 and req_count == 0 and cap > 0
 	var would_exceed := (balance + credit_value) > float(cap)
+	if req_count == 0:
+		pending_credit_shortfall = 0.0
+		pending_buy_cost = 0.0
 
 	# Balance line.
 	if cap == 0:
@@ -168,9 +173,9 @@ func update_panel(
 		elif can_sell:
 			_info_label.add_theme_color_override("font_color", Color(0.75, 0.95, 0.75))
 			_info_label.text = "Selected: +%d credit" % int(min(credit_value, remaining))
-		elif req_count > 0 and offer_value > 0:
+		elif pending_credit_shortfall > 0.0:
 			_info_label.add_theme_color_override("font_color", Color(1.0, 0.65, 0.1))
-			_info_label.text = "Deselect items to sell."
+			_info_label.text = "Need %d more credit" % int(pending_credit_shortfall)
 		else:
 			_info_label.text = ""
 
