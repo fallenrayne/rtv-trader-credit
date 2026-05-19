@@ -36,6 +36,13 @@ Each trader maintains a separate credit balance. Credit is earned by selling ite
 2. In the game's mod manager, enable **Dev Mode** — this is required for the game to load mods from plain folders rather than packaged `.vmz` files.
 3. Enable the mod and launch the game.
 
+### Building the VMZ (contributors)
+
+1. Copy `build.local.ps1.example` to `build.local.ps1` and set `$modsDir` to your Road to Vostok mods folder.
+2. Run `.\build.ps1` from a PowerShell prompt in the repo root.
+
+This packages `TraderCredit/` into `releases/TraderCredit.vmz` and, if `build.local.ps1` is present, copies the VMZ directly to your mods folder for immediate testing.
+
 Settings appear under **Trader Credit** in the MCM sidebar once in-game.
 
 ## How It Works
