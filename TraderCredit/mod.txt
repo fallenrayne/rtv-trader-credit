@@ -3,6 +3,9 @@ name="Trader Credit"
 id="trader_credit"
 version="1.1.1"
 priority=0
+description="Trader-specific credit system. Sell items to earn credit usable only with that trader."
+author="fallenrayne"
+url="https://www.modworkshop.net/mod/56857"
 
 [autoload]
 TraderCreditConfig="res://mods/TraderCredit/Config.gd"
