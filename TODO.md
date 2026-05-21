@@ -8,14 +8,11 @@
       the Credit tab is active
 
 ## UX / Polish
-- [ ] **Merge Barter/Credit tabs** — the two-tab model adds friction; consider a single
+- [x] **Merge Barter/Credit tabs** — the two-tab model adds friction; consider a single
       unified panel where sell-for-credit and credit-buy both work without switching tabs
 - [x] Credit-buy mode is invisible — when the accept button is enabled by credit,
       show the cost somewhere near it (e.g. "Will spend 340 credit") so the player
       knows what's happening before they click
-- [ ] "Will spend X credit" label position is approximate — deferred repositioning
-      based on deal section size doesn't land correctly; revisit when panel layout
-      is better understood
 - [ ] Silent decay — show a message on interface open when a balance has decayed
       since the last visit (e.g. "Your credit with [Trader] decayed to 240")
 - [x] Tab buttons have no active state — the selected tab only dims the other one;
