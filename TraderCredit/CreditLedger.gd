@@ -15,7 +15,7 @@ var _config = null
 
 
 func _ready() -> void:
-	_config = get_tree().root.get_node("TraderCreditConfig")
+	_config = get_tree().root.get_node_or_null("TraderCreditConfig")
 
 
 # ---- Public read API ----
@@ -120,7 +120,12 @@ func apply_decay_for_trader(trader_name: String, current_day: int) -> void:
 # ---- Persistence ----
 
 func save_state() -> void:
+	# Load-modify-save so buyback sections written by BuybackLedger are preserved.
 	var cfg := ConfigFile.new()
+	cfg.load(SAVE_PATH)
+	for section in ["credit", "tasks", "decay_day"]:
+		if cfg.has_section(section):
+			cfg.erase_section(section)
 	for trader_name in _balances:
 		cfg.set_value("credit",    trader_name, _balances[trader_name])
 	for trader_name in _task_counts:

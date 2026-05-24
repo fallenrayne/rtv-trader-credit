@@ -25,7 +25,7 @@
       of how many tasks the player has completed
 
 ## Features
-- [ ] **Item buyback** — when you sell something for credit, the trader holds it for a
+- [x] **Item buyback** — when you sell something for credit, the trader holds it for a
       configurable number of in-game days before it re-enters general stock. A "Buyback" tab
       lets you repurchase it at cost (or cost + small fee) during that window
 - [x] **Task completion credit bonus** — on task complete, award a one-time credit bonus

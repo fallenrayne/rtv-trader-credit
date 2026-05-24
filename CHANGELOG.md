@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.0
+
+- **New:** Buyback system — items sold for credit are held by the trader for a configurable window (default 7 days) and can be repurchased at any time during that window.
+- **New:** Buyback tab added to the trader interface. Integrates into TraderTabs' tab bar if installed; otherwise adds Supply/Buyback toggle buttons above the supply panel.
+- **New:** Repurchase items using credit, inventory items as a trade-in offset, or a mix of both.
+- **New:** Each buyback item shows a color-coded expiry badge (green / yellow / red) indicating days remaining.
+- **New:** MCM settings for buyback: enable/disable, expiry days, max entries per trader, repurchase fee %, and minimum item rarity.
+- **Fix:** Switching from the Supply tab to the Buyback tab now clears any active supply item selection, preventing the vanilla accept button from executing a supply trade instead of a buyback.
+
 ## 1.1.1
 
 - **Fix:** "Deselect items to sell." message no longer appears when the player has trader supply items selected alongside inventory items — the sell button being disabled already communicates this.

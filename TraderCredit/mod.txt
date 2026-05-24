@@ -1,9 +1,9 @@
 [mod]
 name="Trader Credit"
 id="trader_credit"
-version="1.1.1"
+version="1.2.0"
 priority=0
-description="Trader-specific credit system. Sell items to earn credit usable only with that trader."
+description="Trader-specific credit system. Sell items to earn credit, spend it on purchases, and buy back recently sold items during a configurable window."
 author="fallenrayne"
 url="https://www.modworkshop.net/mod/56857"
 

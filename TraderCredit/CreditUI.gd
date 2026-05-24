@@ -13,9 +13,11 @@ var injected: bool = false
 var pending_buy_cost: float = 0.0
 var pending_credit_shortfall: float = 0.0
 var _needs_reposition: bool = false
+var _buyback_mode: bool = false
 var _layout = null
 
-var sell_button: Button = null
+var sell_button: Button      = null
+var buy_back_button: Button  = null
 
 var _wrapper: Control = null
 var _deal_section: Node = null
@@ -31,6 +33,36 @@ func is_valid() -> bool:
 	)
 
 
+func show_buyback_mode(total_cost: float, can_afford: bool = false) -> void:
+	_buyback_mode = true
+	if is_instance_valid(sell_button):
+		sell_button.visible = false
+	if is_instance_valid(buy_back_button):
+		if total_cost > 0.0:
+			buy_back_button.text     = "Buy Back Selected (%d cr)" % int(total_cost)
+			buy_back_button.disabled = not can_afford
+		else:
+			buy_back_button.text     = "Buy Back Selected"
+			buy_back_button.disabled = true
+		buy_back_button.visible = true
+
+
+func set_buyback_info(text: String, col: Color = Color(0.75, 0.95, 0.75)) -> void:
+	if is_instance_valid(_info_label):
+		_info_label.add_theme_color_override("font_color", col)
+		_info_label.text = text
+
+
+func show_sell_mode() -> void:
+	_buyback_mode = false
+	if is_instance_valid(_info_label):
+		_info_label.text = ""
+	if is_instance_valid(buy_back_button):
+		buy_back_button.visible = false
+	if is_instance_valid(sell_button):
+		sell_button.visible = true
+
+
 func _process(_delta: float) -> void:
 	if _needs_reposition and _layout != null and _layout.refresh_deal_height():
 		_needs_reposition = false
@@ -42,8 +74,10 @@ func reset() -> void:
 	pending_buy_cost          = 0.0
 	pending_credit_shortfall  = 0.0
 	_needs_reposition         = false
+	_buyback_mode             = false
 	_layout           = null
 	sell_button       = null
+	buy_back_button   = null
 	_wrapper          = null
 	_deal_section     = null
 	_balance_label    = null
@@ -117,9 +151,6 @@ func inject(iface, section: Node) -> void:
 	_layout.deal_section = section
 	_layout.deal_top_y   = content_y
 
-	print("[TraderCredit] inject — section '%s'  size=%s  min_size=%s" \
-		% [section.name, section.size, section.get_combined_minimum_size()])
-
 	# Sell button — placeholder; _reposition_sell_area() moves it below the deal section.
 	var btn := Button.new()
 	btn.name     = "SellForCredit"
@@ -129,6 +160,17 @@ func inject(iface, section: Node) -> void:
 	btn.size     = Vector2(wrapper_w, 26)
 	wrapper.add_child(btn)
 	sell_button = btn
+
+	# Buy Back button — hidden until the Buyback tab is active.
+	var bb_btn := Button.new()
+	bb_btn.name     = "BuyBackSelected"
+	bb_btn.text     = "Buy Back Selected"
+	bb_btn.disabled = true
+	bb_btn.visible  = false
+	bb_btn.position = Vector2(0, content_y)
+	bb_btn.size     = Vector2(wrapper_w, 26)
+	wrapper.add_child(bb_btn)
+	buy_back_button = bb_btn
 
 	_needs_reposition = true
 	injected = true
@@ -165,8 +207,9 @@ func update_panel(
 	else:
 		_balance_label.text = "Credit: %d / %d" % [int(balance), cap]
 
-	# Right-aligned info — only update when no pending buy is displayed there.
-	if pending_buy_cost <= 0.0 and is_instance_valid(_info_label):
+	# Right-aligned info — only update when no pending buy is displayed there,
+	# and not in buyback mode (buyback sets its own info via set_buyback_info).
+	if pending_buy_cost <= 0.0 and is_instance_valid(_info_label) and not _buyback_mode:
 		if can_sell and would_exceed:
 			_info_label.add_theme_color_override("font_color", Color(1.0, 0.65, 0.1))
 			_info_label.text = "+%d credit (cap reached)" % int(remaining)
@@ -194,10 +237,10 @@ func _reposition_sell_area() -> void:
 	if _layout == null or not is_instance_valid(_deal_section):
 		return
 	var btn_y: float = _layout.below_deal_y(3.0)
-	print("[TraderCredit] _reposition_sell_area — deal_bot_y=%.0f  btn_y=%.0f" \
-		% [_layout.deal_bot_y, btn_y])
 	if is_instance_valid(sell_button):
 		sell_button.position = Vector2(0, btn_y)
+	if is_instance_valid(buy_back_button):
+		buy_back_button.position = Vector2(0, btn_y)
 
 
 func _hide_deal_label(node: Node) -> void:

@@ -13,6 +13,10 @@ const MOD_ID   := "TraderCredit"
 const MOD_NAME := "Trader Credit"
 const FILE_PATH := "user://MCM/TraderCredit"
 
+const BUYBACK_MOD_ID   := "TraderCreditBuyback"
+const BUYBACK_MOD_NAME := "Trader Credit: Buyback"
+const BUYBACK_FILE_PATH := "user://MCM/TraderCreditBuyback"
+
 # ---- Public settings (read directly by Main.gd) ----
 var credit_per_task:       int   = 500
 var credit_cap_max:        int   = 0     # 0 = no hard ceiling
@@ -27,6 +31,12 @@ var task_bonus_enabled:         bool  = true
 var task_bonus_easy:            int   = 100
 var task_bonus_intermediate:    int   = 250
 var task_bonus_hard:            int   = 500
+
+var buyback_enabled:      bool  = true
+var buyback_min_rarity:   int   = 1     # 0 = Common, 1 = Rare, 2 = Legendary
+var buyback_max_entries:  int   = 20
+var buyback_expiry_days:  int   = 7
+var buyback_fee_percent:  float = 5.0
 
 var _mcm_helpers = null
 
@@ -196,13 +206,80 @@ func _ready() -> void:
 
 	_merge_schema(config, FILE_PATH + "/config.ini")
 
+	# ---- Buyback config (separate MCM entry) ----
+	var bb_config := ConfigFile.new()
+
+	bb_config.set_value("Category", "Buyback", {"menu_pos": 1})
+
+	bb_config.set_value("Bool", "buyback_enabled", {
+		"name"     = "Buyback",
+		"tooltip"  = "When ON, rare+ items you sell or trade are held by the trader for a "
+				   + "configurable number of days and can be repurchased with credit.",
+		"default"  = true,
+		"value"    = true,
+		"category" = "Buyback",
+		"menu_pos" = 1,
+	})
+
+	bb_config.set_value("Dropdown", "buyback_min_rarity", {
+		"name"     = "Minimum Rarity",
+		"tooltip"  = "Only items at or above this rarity are tracked for buyback. "
+				   + "Rare+ keeps the list clean; Common includes everything.",
+		"default"  = 1,
+		"value"    = 1,
+		"options"  = ["Common+", "Rare+", "Legendary only"],
+		"category" = "Buyback",
+		"menu_pos" = 2,
+	})
+
+	bb_config.set_value("Int", "buyback_max_entries", {
+		"name"     = "Max Buyback Slots",
+		"tooltip"  = "Maximum number of items tracked per trader. "
+				   + "Oldest entries are dropped when the cap is reached.",
+		"default"  = 20,
+		"value"    = 20,
+		"minRange" = 5,
+		"maxRange" = 50,
+		"category" = "Buyback",
+		"menu_pos" = 3,
+	})
+
+	bb_config.set_value("Int", "buyback_expiry_days", {
+		"name"     = "Expiry (days)",
+		"tooltip"  = "Number of in-game days a sold item remains available for buyback.",
+		"default"  = 7,
+		"value"    = 7,
+		"minRange" = 1,
+		"maxRange" = 30,
+		"category" = "Buyback",
+		"menu_pos" = 4,
+	})
+
+	bb_config.set_value("Float", "buyback_fee_percent", {
+		"name"     = "Buyback Fee (%)",
+		"tooltip"  = "Extra percentage added to the buyback price on top of what "
+				   + "you originally received. 5 = costs 5 % more credit to get the item back.",
+		"default"  = 5.0,
+		"value"    = 5.0,
+		"minRange" = 0.0,
+		"maxRange" = 50.0,
+		"category" = "Buyback",
+		"menu_pos" = 5,
+	})
+
+	_merge_schema(bb_config, BUYBACK_FILE_PATH + "/config.ini")
+
 	if _mcm_helpers == null:
 		# MCM not installed — apply defaults and stop here.
 		_apply(config)
+		_apply_buyback(bb_config)
 		return
 
 	_mcm_helpers.CheckConfigurationHasUpdated(MOD_ID, config, FILE_PATH + "/config.ini")
 	_apply(config)
+
+	_mcm_helpers.CheckConfigurationHasUpdated(BUYBACK_MOD_ID, bb_config, BUYBACK_FILE_PATH + "/config.ini")
+	_apply_buyback(bb_config)
 
 	_mcm_helpers.RegisterConfiguration(
 		MOD_ID,
@@ -210,6 +287,14 @@ func _ready() -> void:
 		FILE_PATH,
 		"Sell items to traders for local credit — usable only with that trader.",
 		{"config.ini" = _apply}
+	)
+
+	_mcm_helpers.RegisterConfiguration(
+		BUYBACK_MOD_ID,
+		BUYBACK_MOD_NAME,
+		BUYBACK_FILE_PATH,
+		"Configure the trader buyback system — hold sold rare+ items for repurchase.",
+		{"config.ini" = _apply_buyback}
 	)
 
 
@@ -232,6 +317,14 @@ func _apply(config: ConfigFile) -> void:
 	task_bonus_easy         = int( config.get_value("Int",  "task_bonus_easy",         {"value": 100  })["value"])
 	task_bonus_intermediate = int( config.get_value("Int",  "task_bonus_intermediate", {"value": 250  })["value"])
 	task_bonus_hard         = int( config.get_value("Int",  "task_bonus_hard",         {"value": 500  })["value"])
+
+
+func _apply_buyback(config: ConfigFile) -> void:
+	buyback_enabled     = bool( config.get_value("Bool",     "buyback_enabled",     {"value": true })["value"])
+	buyback_min_rarity  = int(  config.get_value("Dropdown", "buyback_min_rarity",  {"value": 1    })["value"])
+	buyback_max_entries = int(  config.get_value("Int",      "buyback_max_entries", {"value": 20   })["value"])
+	buyback_expiry_days = int(  config.get_value("Int",      "buyback_expiry_days", {"value": 7    })["value"])
+	buyback_fee_percent = float(config.get_value("Float",    "buyback_fee_percent", {"value": 5.0  })["value"])
 
 
 # Migrates an existing config file forward when new keys are added in an

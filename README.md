@@ -14,6 +14,7 @@ Each trader maintains a separate credit balance. Credit is earned by selling ite
 - Task completion awards an immediate credit bonus on top of raising the cap
 - Credit decays each in-game day, encouraging spending over hoarding
 - Death penalty reduces balances; permadeath wipes them entirely
+- **Buyback system** — items you sell are held by the trader for a configurable window; repurchase them using credit, inventory items, or a mix of both
 - All settings tunable in-game via MCM (Mod Configuration Menu)
 
 ## Requirements
@@ -53,7 +54,7 @@ You start with zero credit capacity with every trader. Each completed trader tas
 
 ### Earning Credit
 
-Open the trader interface, select items from your inventory, and click the **Credit** tab. Items must match what the trader normally deals in (configurable). You receive the item's barter value minus a sell tax (default: 30%).
+Open the trader interface and select items from your inventory. Items must match what the trader normally deals in (configurable). Click **Sell for Credit** below the deal section to receive the item's barter value minus a sell tax (default: 30%).
 
 ### Spending Credit
 
@@ -70,6 +71,16 @@ Credit balances shrink by a percentage each in-game day (compounded). The defaul
 ### Death Penalty
 
 On non-permadeath death, a percentage of every trader's balance is lost. On permadeath, all balances and task counts are wiped.
+
+### Buyback
+
+When you sell items for credit, the trader holds them in a buyback list for a configurable number of in-game days. A **Buyback** tab appears alongside the Supply tab in the trader interface — if TraderTabs is installed the tab integrates into its bar; otherwise toggle buttons appear above the supply panel.
+
+Each buyback item shows a color-coded countdown badge: green (plenty of time), yellow (3 days or fewer), red (1 day or fewer). Expired items are removed the next time you open the interface with that trader.
+
+To repurchase, switch to the Buyback tab, select the items you want back, and click **Buy Back Selected**. The cost is what you originally received plus a small fee (default: 5%). You can offset the cost by selecting inventory items as a trade-in — the credit shortfall drops accordingly, and any offered inventory items that meet the rarity threshold are themselves added to the buyback list.
+
+Only items at or above a configurable rarity (default: Uncommon) are eligible for buyback.
 
 ## Configuration
 
@@ -108,9 +119,19 @@ All settings are in the **Mod Configuration Menu** under **Trader Credit**.
 | Intermediate Task Bonus | 250 | Credit awarded for Intermediate tasks |
 | Hard Task Bonus | 500 | Credit awarded for Hard tasks |
 
+### Buyback
+
+| Setting | Default | Description |
+|---|---|---|
+| Buyback | On | Enable or disable the buyback system entirely |
+| Expiry (days) | 7 | How many in-game days a sold item stays in the buyback list |
+| Max Entries | 20 | Maximum buyback items held per trader |
+| Fee (%) | 5 | Extra percentage added to the repurchase cost above the original sale price |
+| Min. Rarity | Uncommon | Items below this rarity are not added to the buyback list |
+
 ## Save Data
 
-Credit state is saved to `user://trader_credit.cfg`. This file is separate from the main game save — it persists across play sessions and is updated automatically.
+Credit state is saved to `user://trader_credit.tres`. This file is separate from the main game save — it persists across play sessions and is updated automatically.
 
 ## License
 
