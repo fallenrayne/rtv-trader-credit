@@ -2,7 +2,7 @@
 
 ## 1.2.0
 
-- **New:** Buyback system — items sold for credit are held by the trader for a configurable window (default 7 days) and can be repurchased at any time during that window.
+- **New:** Buyback system — any items sold to a trader (for credit or via barter) are held for a configurable window (default 7 days) and can be repurchased at any time during that window.
 - **New:** Buyback tab added to the trader interface. Integrates into TraderTabs' tab bar if installed; otherwise adds Supply/Buyback toggle buttons above the supply panel.
 - **New:** Repurchase items using credit, inventory items as a trade-in offset, or a mix of both.
 - **New:** Each buyback item shows a color-coded expiry badge (green / yellow / red) indicating days remaining.

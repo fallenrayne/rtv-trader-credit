@@ -14,7 +14,7 @@ Each trader maintains a separate credit balance. Credit is earned by selling ite
 - Task completion awards an immediate credit bonus on top of raising the cap
 - Credit decays each in-game day, encouraging spending over hoarding
 - Death penalty reduces balances; permadeath wipes them entirely
-- **Buyback system** — items you sell are held by the trader for a configurable window; repurchase them using credit, inventory items, or a mix of both
+- **Buyback system** — any items you sell (for credit or via barter) are held by the trader for a configurable window; repurchase them using credit, inventory items, or a mix of both
 - All settings tunable in-game via MCM (Mod Configuration Menu)
 
 ## Requirements
@@ -74,7 +74,7 @@ On non-permadeath death, a percentage of every trader's balance is lost. On perm
 
 ### Buyback
 
-When you sell items for credit, the trader holds them in a buyback list for a configurable number of in-game days. A **Buyback** tab appears alongside the Supply tab in the trader interface — if TraderTabs is installed the tab integrates into its bar; otherwise toggle buttons appear above the supply panel.
+Any items you sell to a trader — whether for credit or through a normal barter trade — are held in a buyback list for a configurable number of in-game days. A **Buyback** tab appears alongside the Supply tab in the trader interface — if TraderTabs is installed the tab integrates into its bar; otherwise toggle buttons appear above the supply panel.
 
 Each buyback item shows a color-coded countdown badge: green (plenty of time), yellow (3 days or fewer), red (1 day or fewer). Expired items are removed the next time you open the interface with that trader.
 
