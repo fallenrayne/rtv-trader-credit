@@ -21,20 +21,20 @@ func after_each() -> void:
 
 func test_add_credit_within_cap() -> void:
 	_ledger.set_task_count("Generalist", 2)   # cap = 1000
-	var added := _ledger.add_credit("Generalist", 300.0)
+	var added: float = _ledger.add_credit("Generalist", 300.0)
 	assert_eq(added, 300.0)
 	assert_eq(_ledger.get_balance("Generalist"), 300.0)
 
 
 func test_add_credit_clamps_to_cap() -> void:
 	_ledger.set_task_count("Generalist", 1)   # cap = 500
-	var added := _ledger.add_credit("Generalist", 800.0)
+	var added: float = _ledger.add_credit("Generalist", 800.0)
 	assert_eq(added, 500.0)
 	assert_eq(_ledger.get_balance("Generalist"), 500.0)
 
 
 func test_add_credit_zero_tasks_adds_nothing() -> void:
-	var added := _ledger.add_credit("Generalist", 100.0)
+	var added: float = _ledger.add_credit("Generalist", 100.0)
 	assert_eq(added, 0.0)
 
 

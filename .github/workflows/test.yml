@@ -55,6 +55,9 @@ jobs:
 
       - name: Run tests
         run: |
+          set -o pipefail
           godot-bin/godot --headless --path tests \
             -s res://addons/gut/gut_cmdln.gd \
-            -- -gdir=res://unit -gprefix=test_ -gexit -glog=1
+            -- -gdir=res://unit -gprefix=test_ -gexit -glog=1 \
+            2>&1 | tee /tmp/gut_out.txt
+          ! grep -q "Nothing was run" /tmp/gut_out.txt

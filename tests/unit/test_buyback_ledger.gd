@@ -4,7 +4,7 @@ var _ledger: Node
 var _config: Node
 
 
-func _make_slot(path: String, rarity: int = 1, condition: float = 0.9, amount: int = 1):
+func _make_slot(path: String, rarity: int = 1, condition: float = 0.9, amount: int = 1) -> SlotData:
 	var item := MockItemData.new()
 	item.resource_path = path
 	item.rarity = rarity
@@ -64,7 +64,7 @@ func test_null_slot_data_is_ignored() -> void:
 func test_entry_stores_correct_fields() -> void:
 	var slot := _make_slot("res://items/pistol.tres", 1, 0.75, 3)
 	_ledger.add_entry("Generalist", slot, 150.0, 5)
-	var entries := _ledger.get_entries("Generalist")
+	var entries: Array = _ledger.get_entries("Generalist")
 	assert_eq(entries.size(), 1)
 	var e: Dictionary = entries[0]
 	assert_eq(e["resource_path"], "res://items/pistol.tres")
@@ -88,7 +88,7 @@ func test_oldest_entry_dropped_when_full() -> void:
 	_ledger.add_entry("Generalist", _make_slot("res://items/a.tres"), 10.0, 1)
 	_ledger.add_entry("Generalist", _make_slot("res://items/b.tres"), 20.0, 1)
 	_ledger.add_entry("Generalist", _make_slot("res://items/c.tres"), 30.0, 1)
-	var entries := _ledger.get_entries("Generalist")
+	var entries: Array = _ledger.get_entries("Generalist")
 	# newest-first: c, b — a dropped
 	assert_eq(entries[0]["resource_path"], "res://items/c.tres")
 	assert_eq(entries[1]["resource_path"], "res://items/b.tres")
@@ -182,7 +182,7 @@ func test_remove_entry_preserves_others() -> void:
 	_ledger.add_entry("Generalist", _make_slot("res://items/b.tres"), 20.0, 1)
 	# entries are newest-first: [b, a]; remove index 1 (a)
 	_ledger.remove_entry("Generalist", 1)
-	var entries := _ledger.get_entries("Generalist")
+	var entries: Array = _ledger.get_entries("Generalist")
 	assert_eq(entries.size(), 1)
 	assert_eq(entries[0]["resource_path"], "res://items/b.tres")
 
@@ -194,6 +194,6 @@ func test_remove_entry_out_of_bounds_is_safe() -> void:
 
 func test_get_entries_returns_copy() -> void:
 	_ledger.add_entry("Generalist", _make_slot("res://items/a.tres"), 50.0, 1)
-	var entries := _ledger.get_entries("Generalist")
+	var entries: Array = _ledger.get_entries("Generalist")
 	entries.clear()
 	assert_eq(_ledger.get_entries("Generalist").size(), 1)
