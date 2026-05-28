@@ -127,7 +127,7 @@ func test_supply_cost_multiplies_selected_by_tax() -> void:
 		_make_el(100, true),
 		_make_el(200, true),
 	])
-	assert_eq(GridHelper.get_supply_cost(iface, 1.1), 330.0)
+	assert_almost_eq(GridHelper.get_supply_cost(iface, 1.1), 330.0, 0.01)
 
 
 func test_supply_cost_excludes_unselected() -> void:
