@@ -42,7 +42,7 @@ func get_remaining_cap(trader_name: String) -> float:
 func add_credit(trader_name: String, amount: float) -> float:
 	var cap     := float(get_cap(trader_name))
 	var current := get_balance(trader_name)
-	var added   := max(0.0, min(amount, cap - current))
+	var added:   float = max(0.0, min(amount, cap - current))
 	_balances[trader_name] = current + added
 	save_state()
 	return added

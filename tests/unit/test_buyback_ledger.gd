@@ -6,7 +6,7 @@ var _config: Node
 
 func _make_slot(path: String, rarity: int = 1, condition: float = 0.9, amount: int = 1) -> SlotData:
 	var item := MockItemData.new()
-	item.resource_path = path
+	item.set("resource_path", path)  # native Resource property; can't assign via GDScript member access
 	item.rarity = rarity
 	var slot := SlotData.new()
 	slot.itemData  = item
