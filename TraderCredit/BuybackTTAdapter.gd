@@ -14,7 +14,7 @@ var _panel: Control = null
 
 
 func inject(iface, panel: Control) -> bool:
-	var tt := iface.get_node_or_null("TT_TraderTabs")
+	var tt = iface.get_node_or_null("TT_TraderTabs")
 	if tt == null:
 		return false
 	var tab_bar   = tt.get("tab_bar")
