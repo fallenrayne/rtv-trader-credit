@@ -50,6 +50,9 @@ jobs:
       - name: Wire mod path into test project
         run: mkdir -p tests/mods && ln -s "$(pwd)/TraderCredit" tests/mods/TraderCredit
 
+      - name: Import project
+        run: godot-bin/godot --headless --path tests --import
+
       - name: Run tests
         run: |
           godot-bin/godot --headless --path tests \
