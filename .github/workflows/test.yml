@@ -1,0 +1,57 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    env:
+      GODOT_VERSION: "4.6.2"
+      GUT_VERSION:   "v9.6.0"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Godot binary
+        uses: actions/cache@v4
+        with:
+          path: godot-bin
+          key: godot-${{ env.GODOT_VERSION }}
+
+      - name: Download Godot headless
+        run: |
+          if [ ! -f godot-bin/godot ]; then
+            mkdir -p godot-bin
+            wget -q "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip" -O /tmp/godot.zip
+            unzip -q /tmp/godot.zip -d godot-bin
+            mv "godot-bin/Godot_v${GODOT_VERSION}-stable_linux.x86_64" godot-bin/godot
+            chmod +x godot-bin/godot
+          fi
+
+      - name: Cache GUT
+        uses: actions/cache@v4
+        with:
+          path: tests/addons/gut
+          key: gut-${{ env.GUT_VERSION }}
+
+      - name: Download GUT
+        run: |
+          if [ ! -d tests/addons/gut ]; then
+            mkdir -p tests/addons
+            wget -q "https://github.com/bitwes/Gut/archive/refs/tags/${GUT_VERSION}.zip" -O /tmp/gut.zip
+            unzip -q /tmp/gut.zip -d /tmp/gut_src
+            cp -r /tmp/gut_src/*/addons/gut tests/addons/gut
+          fi
+
+      - name: Wire mod path into test project
+        run: mkdir -p tests/mods && ln -s "$(pwd)/TraderCredit" tests/mods/TraderCredit
+
+      - name: Run tests
+        run: |
+          godot-bin/godot --headless --path tests \
+            -s res://addons/gut/gut_cmdln.gd \
+            -- -gdir=res://unit -gprefix=test_ -gexit -glog=1

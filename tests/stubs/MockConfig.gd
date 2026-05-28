@@ -1,0 +1,19 @@
+extends Node
+var credit_per_task:         int   = 500
+var credit_cap_max:          int   = 0
+var death_penalty_enabled:   bool  = true
+var death_penalty_percent:   float = 10.0
+var decay_enabled:           bool  = true
+var decay_rate_per_day:      float = 5.0
+var decay_floor_percent:     float = 0.0
+var item_restriction:        String = "trader_only"
+var sell_tax:                float = 30.0
+var task_bonus_enabled:      bool  = true
+var task_bonus_easy:         int   = 100
+var task_bonus_intermediate: int   = 250
+var task_bonus_hard:         int   = 500
+var buyback_enabled:         bool  = true
+var buyback_min_rarity:      int   = 1
+var buyback_max_entries:     int   = 20
+var buyback_expiry_days:     int   = 7
+var buyback_fee_percent:     float = 5.0
