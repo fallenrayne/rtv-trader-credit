@@ -36,10 +36,11 @@ func test_tt_inject_leaves_panel_unparented_on_failure() -> void:
 	var iface := preload("res://stubs/MockIface.gd").new()
 	add_child_autofree(iface)
 	var panel := Control.new()
-	add_child_autofree(panel)
+	# Do NOT add_child_autofree here — we're asserting it has no parent.
+	# Free it manually at the end to avoid orphan warning.
 	adapter.inject(iface, panel)
-	# Panel should not have been added anywhere when TT inject fails.
 	assert_null(panel.get_parent())
+	panel.free()
 
 
 func test_tt_cleanup_is_safe_when_not_injected() -> void:
