@@ -49,13 +49,41 @@ func _process(_delta: float) -> void:
 	if _needs_standalone_reposition:
 		_try_apply_standalone_bounds()
 	elif injected and not _is_tt:
-		# Re-enforce every frame — game code may re-show these nodes after we hide them.
+		# Short-circuit when supply UI is hidden — no visible nodes to fight.
+		if not is_instance_valid(_supply_ui) or not _supply_ui.visible:
+			return
+		# Re-enforce hiding of game nodes that get re-shown by game code.
 		if is_instance_valid(_supply_header) and _supply_header.visible:
 			_supply_header.hide()
 		if _buyback_active:
 			for child in _supply_content:
 				if is_instance_valid(child) and child.visible:
 					child.hide()
+
+
+func _on_supply_ui_visibility_changed() -> void:
+	if not injected or not is_instance_valid(_supply_ui):
+		return
+	var supply_vis: bool = _supply_ui.visible
+	if _is_tt:
+		if not supply_vis:
+			if is_instance_valid(_panel):
+				_panel.hide()
+		elif is_instance_valid(_tab_bar) and _tab_bar.current_tab == _tab_index:
+			if is_instance_valid(_panel):
+				_panel.show()
+	else:
+		if is_instance_valid(_tab_bar):
+			_tab_bar.visible = supply_vis
+		if not supply_vis:
+			if is_instance_valid(_panel):
+				_panel.hide()
+		else:
+			# supplyUI just became visible — re-hide the vanilla header we replaced.
+			if is_instance_valid(_supply_header):
+				_supply_header.hide()
+			if _buyback_active and is_instance_valid(_panel):
+				_panel.show()
 
 
 # ---- Lifecycle ----
@@ -89,6 +117,8 @@ func cleanup() -> void:
 	_tab_index   = -1
 	_panel       = null
 	_grid        = null
+	if is_instance_valid(_supply_ui) and _supply_ui.visibility_changed.is_connected(_on_supply_ui_visibility_changed):
+		_supply_ui.visibility_changed.disconnect(_on_supply_ui_visibility_changed)
 	_supply_ui   = null
 	_btn_supply  = null
 	_btn_buyback = null
@@ -153,6 +183,8 @@ func clear_grid() -> void:
 func try_click(pos: Vector2) -> bool:
 	if _grid == null:
 		return false
+	if not is_instance_valid(_panel) or not _panel.is_visible_in_tree():
+		return false
 	for child in _grid.get_children():
 		if not is_instance_valid(child) or not child.has_method("State"):
 			continue
@@ -212,6 +244,7 @@ func _inject_standalone(iface) -> void:
 	if _supply_ui == null:
 		push_warning("[TraderCredit] BuybackUI: supplyUI not found — buyback tab skipped")
 		return
+	_supply_ui.visibility_changed.connect(_on_supply_ui_visibility_changed)
 
 	_iface_ref = iface
 	var btn_h: float = 26.0
@@ -341,6 +374,12 @@ func _build_panel() -> Control:
 
 func _on_tab_changed(idx: int) -> void:
 	if idx == _tab_index:
+		# TT hides grids_container for non-supply tabs (e.g. Tasks). Re-show it
+		# here so our panel — which lives inside it — is actually visible.
+		if is_instance_valid(_tt_node):
+			var grids_ctr = _tt_node.get("grids_container")
+			if grids_ctr != null:
+				grids_ctr.show()
 		# Hide TT's grids before showing ours (TT returns early on unmapped tabs
 		# without hiding them first).
 		if _tt_node != null and _tt_node.has_method("get_all_grids"):

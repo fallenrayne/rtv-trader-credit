@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1
+
+- **Fix:** Supply/Buyback tab row and buyback panel now hide correctly when the Generalist's Tasks panel is shown (standalone path, no TraderTabs). Visibility is synced via a `visibility_changed` signal on `supplyUI` rather than polling every frame.
+- **Fix:** Buyback panel no longer overlays the Tasks panel when TraderTabs is installed. Returning directly to the Buyback tab after Tasks now correctly restores the panel.
+- **Fix:** Buyback grid no longer intercepts clicks while visually hidden behind the Tasks panel. `try_click` now guards with `is_visible_in_tree()` so clicks pass through to the game when the panel's parent chain is hidden.
+
 ## 1.2.0
 
 - **New:** Buyback system — any items sold to a trader (for credit or via barter) are held for a configurable window (default 7 days) and can be repurchased at any time during that window.
