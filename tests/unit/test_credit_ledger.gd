@@ -6,15 +6,14 @@ var _config: Node
 
 func before_each() -> void:
 	_config = preload("res://stubs/MockConfig.gd").new()
-	_config.name = "TraderCreditConfig"
-	get_tree().root.add_child(_config)
 	_ledger = preload("res://mods/TraderCredit/CreditLedger.gd").new()
 	add_child_autofree(_ledger)
+	_ledger._config = _config  # inject directly — avoids stale-node issues with tree lookup
 
 
 func after_each() -> void:
 	if is_instance_valid(_config):
-		_config.queue_free()
+		_config.free()
 
 
 # --- balance ---
