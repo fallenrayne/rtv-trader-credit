@@ -88,7 +88,8 @@ func get_entries(trader_name: String) -> Array:
 
 func get_buyback_cost(entry: Dictionary) -> int:
 	var fee: float = _config.buyback_fee_percent if _config != null else 5.0
-	return int(ceil(float(entry["credit_paid"]) * (1.0 + fee / 100.0)))
+	var raw: float = float(entry["credit_paid"]) * (1.0 + fee / 100.0)
+	return int(ceil(snapped(raw, 0.001)))  # snap before ceil to avoid e.g. 110.000...01 -> 111
 
 
 func days_remaining(entry: Dictionary, current_day: int) -> int:
