@@ -51,27 +51,32 @@ func _iface_with_supply(elements: Array) -> Node:
 func test_accepted_when_trader_flag_absent() -> void:
 	# "medic" is not a declared property on MockItemData — absent flag means universal acceptance.
 	var el := _make_el(100, true, _make_slot())
+	add_child_autofree(el)
 	assert_true(GridHelper.is_item_accepted_by_trader(el, "Medic"))
 
 
 func test_accepted_when_trader_flag_true() -> void:
 	var el := _make_el(100, true, _make_slot("generalist", true))
+	add_child_autofree(el)
 	assert_true(GridHelper.is_item_accepted_by_trader(el, "Generalist"))
 
 
 func test_rejected_when_trader_flag_false() -> void:
 	var el := _make_el(100, true, _make_slot("doctor", false))
+	add_child_autofree(el)
 	assert_false(GridHelper.is_item_accepted_by_trader(el, "Doctor"))
 
 
 func test_rejected_when_slot_data_null() -> void:
 	var el := _make_el(100, true)  # slotData = null
+	add_child_autofree(el)
 	assert_false(GridHelper.is_item_accepted_by_trader(el, "Generalist"))
 
 
 func test_rejected_when_item_data_null() -> void:
 	var slot := SlotData.new()  # slot.itemData left null
 	var el := _make_el(100, true, slot)
+	add_child_autofree(el)
 	assert_false(GridHelper.is_item_accepted_by_trader(el, "Generalist"))
 
 
